@@ -15,7 +15,11 @@ There are two commands(.rd and .sip)
 .sip <sip_amount> <year> <returns>
 .lumpsum <initial_amount> <year> <returns>
 .present <future_value> <year> <inflation>
+Ticker Commands:- 
 .nifty
+.nn50
+.sp500
+.nasdaq
 year is optional with default value as 3 years
 interest/returns is optional with default value as 5.5% pa
 goal_Name is optional but please fill all 4 arguments if you want to add goalName
