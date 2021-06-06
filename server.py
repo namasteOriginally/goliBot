@@ -106,13 +106,13 @@ async def presentValueCalculation(message):
         format_currency(amount, 'INR', locale='en_IN'), int(years), interest, format_currency(presentAmount, 'INR', locale='en_IN'), message.author)
 
 
-def getLiveIndexPrice(index, price, change):
+def getLiveIndexPrice(index, price, change,currency):
     percentChange = float(change)*100/float(price)
     if(change.startswith("-")):
         change = ":chart_with_downwards_trend: {0}".format(change)
     else:
         change = ":chart_with_upwards_trend: {0}".format(change)
-    return "**{3}**\n_Price_ {0} ({2:.2f}%)\n_Change_ {1}".format(format_currency(float(price), 'INR', locale='en_IN'), change, percentChange, index)
+    return "**{3}**\n_Price_ {0} ({2:.2f}%)\n_Change_ {1}".format(format_currency(float(price), currency, locale='en_IN'), change, percentChange, index)
 
 
 def getIndexPrice(index, domestic):
@@ -124,7 +124,7 @@ def getIndexPrice(index, domestic):
             cells = indices.findAll("td")
             if(len(cells) > 0):
                 if(cells[0].text.strip() == index):
-                    return getLiveIndexPrice(index, cells[2].text.strip(), cells[3].text.strip())
+                    return getLiveIndexPrice(index, cells[2].text.strip(), cells[3].text.strip(),"INR")
     else:
         r = requests.get(worldURL)
         soup = BeautifulSoup(r.content, "html.parser")
@@ -133,7 +133,7 @@ def getIndexPrice(index, domestic):
             cells = indices.findAll("td")
             if(len(cells) > 0):
                 if(cells[1].text.strip() == index):
-                    return getLiveIndexPrice(index, cells[2].text.strip().replace(",", ""), cells[3].text.strip().replace(",", ""))
+                    return getLiveIndexPrice(index, cells[2].text.strip().replace(",", ""), cells[3].text.strip().replace(",", ""),"USD")
 
 
 @client.event
