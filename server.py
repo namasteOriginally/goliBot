@@ -5,7 +5,8 @@ import requests
 from bs4 import BeautifulSoup
 
 client = discord.Client()
-URL = "https://money.rediff.com/indices/nse/nifty-50?src=indticker"
+worldURL = "https://money.rediff.com/indices/world"
+nseURL = "https://money.rediff.com/indices/nse"
 helpString = """
 There are two commands(.rd and .sip)
 
@@ -100,20 +101,35 @@ async def presentValueCalculation(message):
         format_currency(amount, 'INR', locale='en_IN'), int(years), interest, format_currency(presentAmount, 'INR', locale='en_IN'), message.author)
 
 
-async def getLiveIndexPrice():
-    r = requests.get(URL)
-    soup = BeautifulSoup(r.content, "html.parser")
-    price=soup.find("span", id="ltpid").text
-    change=soup.find("span", class_="change-pts").text
+def getLiveIndexPrice(index, price, change):
     percentChange = float(change)*100/float(price)
     if(change.startswith("-")):
         change = ":chart_with_downwards_trend: {0}".format(change)
     else:
         change = ":chart_with_upwards_trend: {0}".format(change)
-    return "**NIFTY50**\n_Price_ {0} ({2:.2f}%)\n_Change_ {1}".format(format_currency(float(price), 'INR', locale='en_IN'), change, percentChange)
+    return "**{3}**\n_Price_ {0} ({2:.2f}%)\n_Change_ {1}".format(format_currency(float(price), 'INR', locale='en_IN'), change, percentChange, index)
 
-async def annoyPerson():
-    return ""
+
+def getIndexPrice(index, domestic):
+    if(domestic):
+        r = requests.get(nseURL)
+        soup = BeautifulSoup(r.content, "html.parser")
+        dataTable = soup.find("table", id="dataTable")
+        for indices in dataTable.findAll("tr"):
+            cells = indices.findAll("td")
+            if(len(cells) > 0):
+                if(cells[0].text.strip() == index):
+                    return getLiveIndexPrice(index, cells[2].text.strip(), cells[3].text.strip())
+    else:
+        r = requests.get(worldURL)
+        soup = BeautifulSoup(r.content, "html.parser")
+        dataTable = soup.find("div", id="worldFull").find("table")
+        for indices in dataTable.findAll("tr"):
+            cells = indices.findAll("td")
+            if(len(cells) > 0):
+                if(cells[1].text.strip() == index):
+                    return getLiveIndexPrice(index, cells[2].text.strip().replace(",", ""), cells[3].text.strip().replace(",", ""))
+
 
 @client.event
 async def on_ready():
@@ -134,13 +150,16 @@ async def on_message(message):
         if(message.content.startswith(".present")):
             await message.channel.send(await presentValueCalculation(message))
         if(message.content.startswith(".nifty")):
-            await message.channel.send(await getLiveIndexPrice())
-        if(message.author.equals("namasteOriginally#4013")):
-            await message.channe.send(await annoyPerson())
+            await message.channel.send(getIndexPrice("NIFTY 50",True))
+        if(message.content.startswith(".nn50")):
+            await message.channel.send(getIndexPrice("NIFTY NEXT 50", True))
+        if(message.content.startswith(".sp500")):
+            await message.channel.send(getIndexPrice("S&P500", False))
+        if(message.content.startswith(".nasdaq")):
+            await message.channel.send(getIndexPrice("Nasdaq", False))
     except Exception as inst:
         print(inst)
         await message.channel.send("Something went wrong. Please use .help for details")
 
 
 client.run("ODM1MDA0MDYxMjYyMjgyNzYz.YIJIIQ.rSmy0HGZIP8YOuuOvMqiVA4EMdU")
-
