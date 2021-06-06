@@ -3,6 +3,7 @@ import numpy_financial as np
 from babel.numbers import format_currency
 import requests
 from bs4 import BeautifulSoup
+import key
 
 client = discord.Client()
 worldURL = "https://money.rediff.com/indices/world"
@@ -162,4 +163,4 @@ async def on_message(message):
         await message.channel.send("Something went wrong. Please use .help for details")
 
 
-client.run("ODM1MDA0MDYxMjYyMjgyNzYz.YIJIIQ.rSmy0HGZIP8YOuuOvMqiVA4EMdU")
+client.run(key.Key)
