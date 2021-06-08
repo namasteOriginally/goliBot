@@ -107,12 +107,14 @@ async def presentValueCalculation(message):
         format_currency(amount, 'INR', locale='en_IN'), int(years), interest, format_currency(presentAmount, 'INR', locale='en_IN'), message.author)
 
 
-def getLiveIndexPrice(index, price, change,currency):
+def getLiveIndexPrice(index, price, change, currency, noNewline=False):
     percentChange = float(change)*100/float(price)
     if(change.startswith("-")):
         change = ":chart_with_downwards_trend: {0}".format(change)
     else:
         change = ":chart_with_upwards_trend: {0}".format(change)
+    if(noNewline):
+        return "**{3}** _Price_ {0} ({2:.2f}%) _Change_ {1}\n".format(format_currency(float(price), currency, locale='en_IN'), change, percentChange, index)
     return "**{3}**\n_Price_ {0} ({2:.2f}%)\n_Change_ {1}\n".format(format_currency(float(price), currency, locale='en_IN'), change, percentChange, index)
 
 
@@ -125,7 +127,7 @@ def getIndexPrice(index, domestic):
             cells = indices.findAll("td")
             if(len(cells) > 0):
                 if(cells[0].text.strip() == index):
-                    return getLiveIndexPrice(index, cells[2].text.strip(), cells[3].text.strip(),"INR")
+                    return getLiveIndexPrice(index, cells[2].text.strip(), cells[3].text.strip(), "INR")
     else:
         r = requests.get(worldURL)
         soup = BeautifulSoup(r.content, "html.parser")
@@ -134,7 +136,7 @@ def getIndexPrice(index, domestic):
             cells = indices.findAll("td")
             if(len(cells) > 0):
                 if(cells[1].text.strip() == index):
-                    return getLiveIndexPrice(index, cells[2].text.strip().replace(",", ""), cells[3].text.strip().replace(",", ""),"USD")
+                    return getLiveIndexPrice(index, cells[2].text.strip().replace(",", ""), cells[3].text.strip().replace(",", ""), "USD")
 
 
 @client.event
@@ -156,7 +158,7 @@ async def on_message(message):
         if(message.content.startswith(".present")):
             await message.channel.send(await presentValueCalculation(message))
         if(message.content.startswith(".nifty")):
-            await message.channel.send(getIndexPrice("NIFTY 50",True))
+            await message.channel.send(getIndexPrice("NIFTY 50", True))
         if(message.content.startswith(".nn50")):
             await message.channel.send(getIndexPrice("NIFTY NEXT 50", True))
         if(message.content.startswith(".sp500")):
@@ -164,7 +166,11 @@ async def on_message(message):
         if(message.content.startswith(".nasdaq")):
             await message.channel.send(getIndexPrice("Nasdaq", False))
         if(message.content.startswith(".index")):
-            await message.channel.send(getIndexPrice("NIFTY 50", True)+getIndexPrice("NIFTY NEXT 50", True)+getIndexPrice("S&P500", False)+getIndexPrice("Nasdaq", False))
+            indexMessage = getIndexPrice("NIFTY 50", True, noNewline=True)
+            + getIndexPrice("NIFTY NEXT 50", True, noNewline=True)
+            + getIndexPrice("S&P500", False, noNewline=True)
+            + getIndexPrice("Nasdaq", False, noNewline=True)
+            await message.channel.send(indexMessage)
     except Exception as inst:
         print(inst)
         await message.channel.send("Something went wrong. Please use .help for details")
