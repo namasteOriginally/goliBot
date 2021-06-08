@@ -113,7 +113,7 @@ def getLiveIndexPrice(index, price, change,currency):
         change = ":chart_with_downwards_trend: {0}".format(change)
     else:
         change = ":chart_with_upwards_trend: {0}".format(change)
-    return "**{3}**\n_Price_ {0} ({2:.2f}%)\n_Change_ {1}".format(format_currency(float(price), currency, locale='en_IN'), change, percentChange, index)
+    return "**{3}**\n_Price_ {0} ({2:.2f}%)\n_Change_ {1}\n".format(format_currency(float(price), currency, locale='en_IN'), change, percentChange, index)
 
 
 def getIndexPrice(index, domestic):
@@ -164,10 +164,7 @@ async def on_message(message):
         if(message.content.startswith(".nasdaq")):
             await message.channel.send(getIndexPrice("Nasdaq", False))
         if(message.content.startswith(".index")):
-            await message.channel.send(getIndexPrice("NIFTY 50", True))
-            await message.channel.send(getIndexPrice("NIFTY NEXT 50", True))
-            await message.channel.send(getIndexPrice("S&P500", False))
-            await message.channel.send(getIndexPrice("Nasdaq", False))
+            await message.channel.send(getIndexPrice("NIFTY 50", True)+getIndexPrice("NIFTY NEXT 50", True)+getIndexPrice("S&P500", False)+getIndexPrice("Nasdaq", False))
     except Exception as inst:
         print(inst)
         await message.channel.send("Something went wrong. Please use .help for details")
