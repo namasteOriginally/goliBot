@@ -110,9 +110,10 @@ async def presentValueCalculation(message):
 def getLiveIndexPrice(index, price, change, noNewline):
     percentChange = float(change)*100/float(price)
     if(change.startswith("-")):
-        change = ":chart_with_downwards_trend: {0}".format(change)
+        
+        change = ":red_circle: {0}".format(change)
     else:
-        change = ":chart_with_upwards_trend: {0}".format(change)
+        change = ":green_circle: {0}".format(change)
     if(noNewline):
         return "**{3}** {0} ({2:.2f}%) {1}\n".format(format_number(float(price), locale='en_IN'), change, percentChange, index)
     return "**{3}**\n_Price_ {0} ({2:.2f}%)\n_Change_ {1}\n".format(format_number(float(price), locale='en_IN'), change, percentChange, index)
