@@ -20,6 +20,7 @@ Ticker Commands:-
 .nn50
 .sp500
 .nasdaq
+.index (Get all index)
 year is optional with default value as 3 years
 interest/returns is optional with default value as 5.5% pa
 goal_Name is optional but please fill all 4 arguments if you want to add goalName
@@ -161,6 +162,11 @@ async def on_message(message):
         if(message.content.startswith(".sp500")):
             await message.channel.send(getIndexPrice("S&P500", False))
         if(message.content.startswith(".nasdaq")):
+            await message.channel.send(getIndexPrice("Nasdaq", False))
+        if(message.content.startswith(".index")):
+            await message.channel.send(getIndexPrice("NIFTY 50", True))
+            await message.channel.send(getIndexPrice("NIFTY NEXT 50", True))
+            await message.channel.send(getIndexPrice("S&P500", False))
             await message.channel.send(getIndexPrice("Nasdaq", False))
     except Exception as inst:
         print(inst)
