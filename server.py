@@ -171,7 +171,7 @@ async def on_message(message):
             await message.channel.send(await futureValueCalculation(message))
         if(message.content.startswith(".present")):
             await message.channel.send(await presentValueCalculation(message))
-        if("II" in message.content and message.guild.startswith("Inquisitors")):
+        if("II" in message.content and str(message.guild).startswith("Inquisitors")):
             await message.channel.send(iiCount())
         if(message.content.startswith(".nifty")):
             await message.channel.send(getIndexPrice("NIFTY 50", True))
