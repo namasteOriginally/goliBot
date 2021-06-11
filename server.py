@@ -139,6 +139,20 @@ def getIndexPrice(index, domestic, noNewLine=False):
                     return getLiveIndexPrice(index, cells[2].text.strip().replace(",", ""), cells[3].text.strip().replace(",", ""), noNewLine)
 
 
+def iiCount():
+    a = ""
+    try:
+        with open("store.txt", 'r') as f:
+            a = f.readlines()
+    except:
+        a=["0"]
+    b = int(a[0])
+    b = b+1
+    with open("store.txt", 'w') as f:
+        f.write(str(b))
+    return "Your stockholm syndrome counter for Indian Investments is currently at {0}".format(b)
+
+
 @client.event
 async def on_ready():
     await client.change_presence(activity=discord.Game("type .help"))
@@ -157,6 +171,8 @@ async def on_message(message):
             await message.channel.send(await futureValueCalculation(message))
         if(message.content.startswith(".present")):
             await message.channel.send(await presentValueCalculation(message))
+        if("II" in message.content and message.guild.startswith("Inquisitors")):
+            await message.channel.send(iiCount())
         if(message.content.startswith(".nifty")):
             await message.channel.send(getIndexPrice("NIFTY 50", True))
         if(message.content.startswith(".nn50")):
@@ -166,7 +182,9 @@ async def on_message(message):
         if(message.content.startswith(".nasdaq")):
             await message.channel.send(getIndexPrice("Nasdaq", False))
         if(message.content.startswith(".index")):
-            indexMessage = getIndexPrice("NIFTY 50", True, noNewLine=True)+ getIndexPrice("NIFTY NEXT 50", True, noNewLine=True) + getIndexPrice("S&P500", False, noNewLine=True)+ getIndexPrice("Nasdaq", False, noNewLine=True)
+            indexMessage = getIndexPrice("NIFTY 50", True, noNewLine=True) + getIndexPrice("NIFTY NEXT 50", True, noNewLine=True) + \
+                getIndexPrice("S&P500", False, noNewLine=True) + \
+                getIndexPrice("Nasdaq", False, noNewLine=True)
             await message.channel.send(indexMessage)
     except Exception as inst:
         print(inst)
