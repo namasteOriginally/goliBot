@@ -1,4 +1,5 @@
 import discord
+from numpy.testing._private.utils import measure
 import numpy_financial as np
 from babel.numbers import format_currency, format_number
 import requests
@@ -8,6 +9,7 @@ import key
 client = discord.Client()
 worldURL = "https://money.rediff.com/indices/world"
 nseURL = "https://money.rediff.com/indices/nse"
+IIArray= ["II","ii","Indian Investments","crime","crimelabs"]
 helpString = """
 There are two commands(.rd and .sip)
 
@@ -148,9 +150,13 @@ def iiCount():
         a=["0"]
     b = int(a[0])
     b = b+1
+    print(b)
     with open("store.txt", 'w') as f:
         f.write(str(b))
-    return "Your stockholm syndrome counter for Indian Investments is currently at {0}".format(b)
+    if(b%5==0):
+        return "Your stockholm syndrome counter for Indian Investments is currently at {0}".format(b)
+    else:
+        return ""
 
 
 @client.event
@@ -161,6 +167,10 @@ async def on_ready():
 @client.event
 async def on_message(message):
     try:
+        IIFound=False
+        for pattern in IIArray:
+            if(pattern in message.content):
+                IIFound=True
         if(message.content.startswith(".help")):
             await message.channel.send(helpString)
         if(message.content.startswith(".sip")):
@@ -171,8 +181,10 @@ async def on_message(message):
             await message.channel.send(await futureValueCalculation(message))
         if(message.content.startswith(".present")):
             await message.channel.send(await presentValueCalculation(message))
-        if("II" in message.content and str(message.guild).startswith("Inquisitors")):
-            await message.channel.send(iiCount())
+        if(IIFound):
+            IIMessage=iiCount()
+            if(IIMessage!=""):
+                await message.channel.send(IIMessage)
         if(message.content.startswith(".nifty")):
             await message.channel.send(getIndexPrice("NIFTY 50", True))
         if(message.content.startswith(".nn50")):
