@@ -154,7 +154,7 @@ def iiCount():
     with open("store.txt", 'w') as f:
         f.write(str(b))
     if(b%5==0):
-        return "you have simped II {0} times till now".format(b)
+        return "you have simped II {0} times till now :fire:".format(b)
     else:
         return ""
 
@@ -181,7 +181,7 @@ async def on_message(message):
             await message.channel.send(await futureValueCalculation(message))
         if(message.content.startswith(".present")):
             await message.channel.send(await presentValueCalculation(message))
-        if(IIFound):
+        if(IIFound and not str(message.author).startswith("Goli RD")):
             IIMessage=iiCount()
             if(IIMessage!=""):
                 await message.channel.send(IIMessage)
