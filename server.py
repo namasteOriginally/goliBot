@@ -154,7 +154,7 @@ def iiCount():
     with open("store.txt", 'w') as f:
         f.write(str(b))
     if(b%5==0):
-        return "Your stockholm syndrome counter for Indian Investments is currently at {0}".format(b)
+        return "you have simped ii {0} times till now".format(b)
     else:
         return ""
 
