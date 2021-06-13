@@ -4,12 +4,14 @@ import numpy_financial as np
 from babel.numbers import format_currency, format_number
 import requests
 from bs4 import BeautifulSoup
+import pickle
 import key
+
 
 client = discord.Client()
 worldURL = "https://money.rediff.com/indices/world"
 nseURL = "https://money.rediff.com/indices/nse"
-IIArray= ["II","ii","Indian Investments","crime","crimelabs"]
+IIArray= ["ii","indian investments","crime","crimelabs"]
 helpString = """
 There are two commands(.rd and .sip)
 
@@ -141,20 +143,37 @@ def getIndexPrice(index, domestic, noNewLine=False):
                     return getLiveIndexPrice(index, cells[2].text.strip().replace(",", ""), cells[3].text.strip().replace(",", ""), noNewLine)
 
 
-def iiCount():
-    a = ""
+def sendIIStats():
+    with open("store.txt", 'rb') as f:
+        ServerIIData = pickle.load(f)
+        messageString=""
+        for x in ServerIIData.keys():
+            print(x)
+            messageString+="{0}:-{1}\n".format(x,ServerIIData[x])
+        return messageString
+    return "No data stored";
+
+
+
+def iiCount(author):
+    ServerIIData = ""
     try:
-        with open("store.txt", 'r') as f:
-            a = f.readlines()
+        with open("store.txt", 'rb') as f:
+            ServerIIData= pickle.load(f)
     except:
-        a=["0"]
-    b = int(a[0])
-    b = b+1
-    print(b)
-    with open("store.txt", 'w') as f:
-        f.write(str(b))
-    if(b%5==0):
-        return "you have simped II {0} times till now :fire:".format(b)
+        ServerIIData=dict()
+    if('Count' in ServerIIData.keys()):
+        ServerIIData['Count'] = ServerIIData['Count']+1
+    else:
+        ServerIIData['Count'] = 1
+    if(author.mention in ServerIIData.keys()):
+        ServerIIData[author.mention] = ServerIIData[author.mention]+1
+    else:
+        ServerIIData[author.mention] = 1
+    with open("store.txt", 'wb') as f:
+        pickle.dump(ServerIIData,f)
+    if(ServerIIData['Count'] % 5 == 0):
+        return "This server have simped II {0} times till now :fire:\nSend .stats for details".format(ServerIIData["Count"])
     else:
         return ""
 
@@ -169,7 +188,7 @@ async def on_message(message):
     try:
         IIFound=False
         for pattern in IIArray:
-            if(pattern in message.content):
+            if(pattern in message.content.lower()):
                 IIFound=True
         if(message.content.startswith(".help")):
             await message.channel.send(helpString)
@@ -182,9 +201,11 @@ async def on_message(message):
         if(message.content.startswith(".present")):
             await message.channel.send(await presentValueCalculation(message))
         if(IIFound and not str(message.author).startswith("Goli RD")):
-            IIMessage=iiCount()
+            IIMessage = iiCount(message.author)
             if(IIMessage!=""):
                 await message.channel.send(IIMessage)
+        if(message.content.startswith(".stats")):
+            await message.channel.send(sendIIStats())
         if(message.content.startswith(".nifty")):
             await message.channel.send(getIndexPrice("NIFTY 50", True))
         if(message.content.startswith(".nn50")):
