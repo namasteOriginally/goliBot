@@ -200,7 +200,7 @@ async def on_message(message):
             await message.channel.send(await futureValueCalculation(message))
         if(message.content.startswith(".present")):
             await message.channel.send(await presentValueCalculation(message))
-        if(IIFound and not str(message.author).startswith("Goli RD")):
+        if(IIFound and not str(message.author).startswith("Goli RD") and str(message.guild).startswith("Inquisitors")):
             IIMessage = iiCount(message.author)
             if(IIMessage!=""):
                 await message.channel.send(IIMessage)
