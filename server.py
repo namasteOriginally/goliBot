@@ -173,7 +173,7 @@ def iiCount(author):
     with open("store.txt", 'wb') as f:
         pickle.dump(ServerIIData,f)
     if(ServerIIData['Count'] % 5 == 0):
-        return "This server have simped II {0} times till now :fire:\nSend .stats for details".format(ServerIIData["Count"])
+        return "This server has simped II {0} times till now :fire:\nSend .stats for details".format(ServerIIData["Count"])
     else:
         return ""
 
