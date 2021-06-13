@@ -156,6 +156,7 @@ def sendIIStats():
 
 
 def iiCount(author):
+    author=str(author)
     ServerIIData = ""
     try:
         with open("store.txt", 'rb') as f:
@@ -166,10 +167,10 @@ def iiCount(author):
         ServerIIData['Count'] = ServerIIData['Count']+1
     else:
         ServerIIData['Count'] = 1
-    if(author.mention in ServerIIData.keys()):
-        ServerIIData[author.mention] = ServerIIData[author.mention]+1
+    if(author in ServerIIData.keys()):
+        ServerIIData[author] = ServerIIData[author]+1
     else:
-        ServerIIData[author.mention] = 1
+        ServerIIData[author] = 1
     with open("store.txt", 'wb') as f:
         pickle.dump(ServerIIData,f)
     if(ServerIIData['Count'] % 5 == 0):
