@@ -32,6 +32,9 @@ goal_Name is optional but please fill all 4 arguments if you want to add goalNam
 Hosted on AWS Bitches!!!!!
 """
 
+# Utilities
+def convert_to_uppercase(data: list):
+    return list(map(lambda x: x.upper(), data))
 
 async def sipCalculation(message):
     years = 3
@@ -146,10 +149,11 @@ def getIndexPrice(index, domestic, noNewLine=False):
 def sendIIStats():
     with open("store.txt", 'rb') as f:
         ServerIIData = pickle.load(f)
+        SortedData = dict(sorted(ServerIIData.items(), key=lambda x:x[1], reverse=True))
         messageString=""
-        for x in ServerIIData.keys():
+        for x in SortedData.keys():
             print(x)
-            messageString+="{0}:-{1}\n".format(x,ServerIIData[x])
+            messageString+="{0}: {1}\n".format(x,ServerIIData[x])
         return messageString
     return "No data stored";
 
@@ -188,8 +192,9 @@ async def on_ready():
 async def on_message(message):
     try:
         IIFound=False
-        for pattern in IIArray:
-            if(pattern in message.content.lower()):
+        for pattern in convert_to_uppercase(IIArray):
+            message_list = convert_to_uppercase(message.content.split(" "))
+            if(pattern in message_list or "indian investments" in message.content.lower()):
                 IIFound=True
         if(message.content.startswith(".help")):
             await message.channel.send(helpString)
